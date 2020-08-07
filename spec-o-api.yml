@@ -1,0 +1,771 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: hello@clerk.dev
+    name: Clerk
+    url: 'https://www.clerk.dev'
+  description: A REST API for accessing Clerk data from a Server.
+  title: Clerk Server API
+  version: '2020-06-16'
+components:
+  schemas:
+    Server.SessionList:
+      type: array
+      nullable: true
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          object:
+            type: string
+            description: |
+              String representing the object's type. Objects of the same type share the same value.
+            enum:
+              - session
+          id:
+            type: string
+            description: |
+              String representing the identifier of the session.
+          sign_in_attempt:
+            nullable: true
+            allOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  object:
+                    type: string
+                    description: |
+                      String representing the object's type. Objects of the same type share the same value.
+                    enum:
+                      - sign_in_attempt
+                  status:
+                    type: string
+                    enum:
+                      - abandoned
+                      - needs_identifier
+                      - needs_factor_one
+                      - needs_factor_two
+                      - complete
+                  allowed_identifier_types:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - email_address
+                        - phone_number
+                        - username
+                        - oauth_google
+                        - oauth_mock
+                  identifier:
+                    nullable: true
+                    type: string
+                  allowed_factor_one_strategies:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - password
+                        - phone_code
+                        - email_code
+                        - oauth_google
+                        - oauth_mock
+                  factor_one_verification:
+                    nullable: true
+                    oneOf:
+                      - type: object
+                        additionalProperties: false
+                        properties:
+                          status:
+                            type: string
+                            enum:
+                              - unverified
+                              - verified
+                          strategy:
+                            type: string
+                            enum:
+                              - password
+                          attempts:
+                            type: integer
+                        required:
+                          - status
+                          - strategy
+                          - attempts
+                      - type: object
+                        additionalProperties: false
+                        properties:
+                          status:
+                            type: string
+                            enum:
+                              - unverified
+                              - verified
+                              - failed
+                              - expired
+                              - transferable
+                          strategy:
+                            type: string
+                            enum:
+                              - oauth_google
+                              - oauth_mock
+                          external_verification_redirect_url:
+                            nullable: true
+                            type: string
+                          error:
+                            nullable: true
+                            oneOf:
+                              - type: object
+                                properties:
+                                  type:
+                                    type: string
+                                  message:
+                                    type: string
+                                required:
+                                  - type
+                                  - message
+                          expire_at:
+                            type: integer
+                        required:
+                          - status
+                          - strategy
+                          - external_verification_redirect_url
+                          - error
+                          - expire_at
+                      - type: object
+                        additionalProperties: false
+                        properties:
+                          status:
+                            type: string
+                            enum:
+                              - unverified
+                              - verified
+                              - failed
+                              - expired
+                          strategy:
+                            type: string
+                            enum:
+                              - phone_code
+                              - email_code
+                          attempts:
+                            type: integer
+                          expire_at:
+                            type: integer
+                        required:
+                          - status
+                          - attempts
+                          - strategy
+                          - expire_at
+                      - type: object
+                        additionalProperties: false
+                        properties:
+                          status:
+                            type: string
+                            enum:
+                              - verified
+                          strategy:
+                            type: string
+                            enum:
+                              - admin
+                        required:
+                          - status
+                          - strategy
+                  created_user_session_id:
+                    nullable: true
+                    type: string
+                  expire_at:
+                    type: integer
+                  abandon_at:
+                    type: integer
+                required:
+                  - object
+                  - status
+                  - allowed_identifier_types
+                  - identifier
+                  - allowed_factor_one_strategies
+                  - factor_one_verification
+                  - created_user_session_id
+                  - abandon_at
+          sign_up_attempt:
+            nullable: true
+            allOf:
+              - type: object
+                properties:
+                  object:
+                    type: string
+                    description: |
+                      String representing the object's type. Objects of the same type share the same value.
+                    enum:
+                      - sign_up_attempt
+                  status:
+                    type: string
+                    enum:
+                      - abandoned
+                      - missing_requirements
+                      - complete
+          user_sessions:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: string
+                object:
+                  type: string
+                  description: |
+                    String representing the object's type. Objects of the same type share the same value.
+                  enum:
+                    - user_session
+                status:
+                  type: string
+                  enum:
+                    - active
+                    - revoked
+                    - ended
+                    - expired
+                    - removed
+                    - abandoned
+                expire_at:
+                  type: integer
+                abandon_at:
+                  type: integer
+                user:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                    object:
+                      type: string
+                      description: |
+                        String representing the object's type. Objects of the same type share the same value.
+                      enum:
+                        - user
+                    primary_email_address_id:
+                      nullable: true
+                      type: string
+                    primary_phone_number_id:
+                      nullable: true
+                      type: string
+                    username:
+                      nullable: true
+                      type: string
+                    first_name:
+                      nullable: true
+                      type: string
+                    last_name:
+                      nullable: true
+                      type: string
+                    middle_name:
+                      nullable: true
+                      type: string
+                    name_title:
+                      nullable: true
+                      type: string
+                    name_suffix:
+                      nullable: true
+                      type: string
+                    gender:
+                      nullable: true
+                      type: string
+                    email_addresses:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          id:
+                            type: string
+                          object:
+                            type: string
+                            description: |
+                              String representing the object's type. Objects of the same type share the same value.
+                            enum:
+                              - email_address
+                          email_address:
+                            type: string
+                          verification:
+                            nullable: true
+                            oneOf:
+                              - $ref: '#/components/schemas/Server.SessionList/items/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/2'
+                              - $ref: '#/components/schemas/Server.SessionList/items/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/3'
+                    phone_numbers:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          id:
+                            type: string
+                          object:
+                            type: string
+                            description: |
+                              String representing the object's type. Objects of the same type share the same value.
+                            enum:
+                              - phone_number
+                          phone_number:
+                            type: string
+                          verification:
+                            nullable: true
+                            oneOf:
+                              - $ref: '#/components/schemas/Server.SessionList/items/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/2'
+                              - $ref: '#/components/schemas/Server.SessionList/items/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/3'
+                    has_password:
+                      type: boolean
+                    oauth_data:
+                      nullable: true
+                      type: object
+                    organization:
+                      nullable: true
+                      type: object
+                    external_accounts:
+                      type: array
+                      items:
+                        type: object
+                    read_only_public_data:
+                      type: object
+                    read_write_public_data:
+                      type: object
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+        required:
+          - object
+          - sign_in_attempt
+          - sign_up_attempt
+          - user_sessions
+  responses:
+    Server.SessionList:
+      description: A list of sessions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Server.SessionList'
+paths:
+  /v1/sessions:
+    get:
+      tags:
+        - Sessions
+      operationId: getSessionList
+      responses:
+        '200':
+          $ref: '#/components/responses/Server.SessionList'
+  '/v1/sessions/{session_id}/authenticate':
+    post:
+      tags:
+        - Session
+        - Authenticate
+      operationId: postSessionsAuthenticate
+      responses:
+        '200':
+          description: Returns an Authenticated Session.
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+                allOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      object:
+                        type: string
+                        description: |
+                          String representing the object's type. Objects of the same type share the same value.
+                        enum:
+                          - session
+                      id:
+                        type: string
+                        description: |
+                          String representing the identifier of the session.
+                      sign_in_attempt:
+                        nullable: true
+                        allOf:
+                          - type: object
+                            additionalProperties: false
+                            properties:
+                              object:
+                                type: string
+                                description: |
+                                  String representing the object's type. Objects of the same type share the same value.
+                                enum:
+                                  - sign_in_attempt
+                              status:
+                                type: string
+                                enum:
+                                  - abandoned
+                                  - needs_identifier
+                                  - needs_factor_one
+                                  - needs_factor_two
+                                  - complete
+                              allowed_identifier_types:
+                                type: array
+                                items:
+                                  type: string
+                                  enum:
+                                    - email_address
+                                    - phone_number
+                                    - username
+                                    - oauth_google
+                                    - oauth_mock
+                              identifier:
+                                nullable: true
+                                type: string
+                              allowed_factor_one_strategies:
+                                type: array
+                                items:
+                                  type: string
+                                  enum:
+                                    - password
+                                    - phone_code
+                                    - email_code
+                                    - oauth_google
+                                    - oauth_mock
+                              factor_one_verification:
+                                nullable: true
+                                oneOf:
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      status:
+                                        type: string
+                                        enum:
+                                          - unverified
+                                          - verified
+                                      strategy:
+                                        type: string
+                                        enum:
+                                          - password
+                                      attempts:
+                                        type: integer
+                                    required:
+                                      - status
+                                      - strategy
+                                      - attempts
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      status:
+                                        type: string
+                                        enum:
+                                          - unverified
+                                          - verified
+                                          - failed
+                                          - expired
+                                          - transferable
+                                      strategy:
+                                        type: string
+                                        enum:
+                                          - oauth_google
+                                          - oauth_mock
+                                      external_verification_redirect_url:
+                                        nullable: true
+                                        type: string
+                                      error:
+                                        nullable: true
+                                        oneOf:
+                                          - type: object
+                                            properties:
+                                              type:
+                                                type: string
+                                              message:
+                                                type: string
+                                            required:
+                                              - type
+                                              - message
+                                      expire_at:
+                                        type: integer
+                                    required:
+                                      - status
+                                      - strategy
+                                      - external_verification_redirect_url
+                                      - error
+                                      - expire_at
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      status:
+                                        type: string
+                                        enum:
+                                          - unverified
+                                          - verified
+                                          - failed
+                                          - expired
+                                      strategy:
+                                        type: string
+                                        enum:
+                                          - phone_code
+                                          - email_code
+                                      attempts:
+                                        type: integer
+                                      expire_at:
+                                        type: integer
+                                    required:
+                                      - status
+                                      - attempts
+                                      - strategy
+                                      - expire_at
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      status:
+                                        type: string
+                                        enum:
+                                          - verified
+                                      strategy:
+                                        type: string
+                                        enum:
+                                          - admin
+                                    required:
+                                      - status
+                                      - strategy
+                              created_user_session_id:
+                                nullable: true
+                                type: string
+                              expire_at:
+                                type: integer
+                              abandon_at:
+                                type: integer
+                            required:
+                              - object
+                              - status
+                              - allowed_identifier_types
+                              - identifier
+                              - allowed_factor_one_strategies
+                              - factor_one_verification
+                              - created_user_session_id
+                              - abandon_at
+                      sign_up_attempt:
+                        nullable: true
+                        allOf:
+                          - type: object
+                            properties:
+                              object:
+                                type: string
+                                description: |
+                                  String representing the object's type. Objects of the same type share the same value.
+                                enum:
+                                  - sign_up_attempt
+                              status:
+                                type: string
+                                enum:
+                                  - abandoned
+                                  - missing_requirements
+                                  - complete
+                      user_sessions:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            id:
+                              type: string
+                            object:
+                              type: string
+                              description: |
+                                String representing the object's type. Objects of the same type share the same value.
+                              enum:
+                                - user_session
+                            status:
+                              type: string
+                              enum:
+                                - active
+                                - revoked
+                                - ended
+                                - expired
+                                - removed
+                                - abandoned
+                            expire_at:
+                              type: integer
+                            abandon_at:
+                              type: integer
+                            user:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                id:
+                                  type: string
+                                object:
+                                  type: string
+                                  description: |
+                                    String representing the object's type. Objects of the same type share the same value.
+                                  enum:
+                                    - user
+                                primary_email_address_id:
+                                  nullable: true
+                                  type: string
+                                primary_phone_number_id:
+                                  nullable: true
+                                  type: string
+                                username:
+                                  nullable: true
+                                  type: string
+                                first_name:
+                                  nullable: true
+                                  type: string
+                                last_name:
+                                  nullable: true
+                                  type: string
+                                middle_name:
+                                  nullable: true
+                                  type: string
+                                name_title:
+                                  nullable: true
+                                  type: string
+                                name_suffix:
+                                  nullable: true
+                                  type: string
+                                gender:
+                                  nullable: true
+                                  type: string
+                                email_addresses:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    properties:
+                                      id:
+                                        type: string
+                                      object:
+                                        type: string
+                                        description: |
+                                          String representing the object's type. Objects of the same type share the same value.
+                                        enum:
+                                          - email_address
+                                      email_address:
+                                        type: string
+                                      verification:
+                                        nullable: true
+                                        oneOf:
+                                          - $ref: '#/paths/~1v1~1sessions~1%7Bsession_id%7D~1authenticate/post/responses/200/content/application~1json/schema/allOf/0/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/2'
+                                          - $ref: '#/paths/~1v1~1sessions~1%7Bsession_id%7D~1authenticate/post/responses/200/content/application~1json/schema/allOf/0/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/3'
+                                phone_numbers:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    properties:
+                                      id:
+                                        type: string
+                                      object:
+                                        type: string
+                                        description: |
+                                          String representing the object's type. Objects of the same type share the same value.
+                                        enum:
+                                          - phone_number
+                                      phone_number:
+                                        type: string
+                                      verification:
+                                        nullable: true
+                                        oneOf:
+                                          - $ref: '#/paths/~1v1~1sessions~1%7Bsession_id%7D~1authenticate/post/responses/200/content/application~1json/schema/allOf/0/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/2'
+                                          - $ref: '#/paths/~1v1~1sessions~1%7Bsession_id%7D~1authenticate/post/responses/200/content/application~1json/schema/allOf/0/properties/sign_in_attempt/allOf/0/properties/factor_one_verification/oneOf/3'
+                                has_password:
+                                  type: boolean
+                                oauth_data:
+                                  nullable: true
+                                  type: object
+                                organization:
+                                  nullable: true
+                                  type: object
+                                external_accounts:
+                                  type: array
+                                  items:
+                                    type: object
+                                read_only_public_data:
+                                  type: object
+                                read_write_public_data:
+                                  type: object
+                                created_at:
+                                  type: string
+                                  format: date-time
+                                updated_at:
+                                  type: string
+                                  format: date-time
+                    required:
+                      - object
+                      - sign_in_attempt
+                      - sign_up_attempt
+                      - user_sessions
+        '400':
+          description: Sessions error.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - form_invalid
+                  message:
+                    type: string
+                  errors:
+                    nullable: true
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - type
+                        - message
+                required:
+                  - type
+                  - message
+        '401':
+          description: Clerk key error.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - clerk_key_invalid
+                  message:
+                    type: string
+                required:
+                  - type
+                  - message
+        '403':
+          description: Token error.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - token_invalid
+                  message:
+                    type: string
+                required:
+                  - type
+                  - message
+        '404':
+          description: Resource not found error.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - url_resource_not_found
+                  message:
+                    type: string
+                required:
+                  - type
+                  - message
